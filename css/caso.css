@@ -407,9 +407,9 @@ body {
   overflow: hidden;
   cursor: pointer;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-top: 2px solid var(--accent);
-  background: #000;           /* fondo negro sólido cuando está recogida */
+  background: #2a2520;        /* gris oscuro cálido cuando está recogida */
   outline: none;
   transition: flex-grow 0.75s cubic-bezier(.22, .61, .36, 1),
               box-shadow 0.5s ease;
@@ -439,8 +439,8 @@ body {
   object-position: center;
   display: block;
   border: none;
-  background: #000;
-  opacity: 0;                 /* oculta por defecto → se ve el fondo negro */
+  background: #2a2520;
+  opacity: 0;                 /* oculta por defecto → se ve el fondo gris de la card */
   transform: scale(1.02);
   transition: opacity 0.55s ease,
               transform 0.9s cubic-bezier(.22, .61, .36, 1);
@@ -464,20 +464,24 @@ body {
   transform: scale(1);
 }
 
+/* Panel lateral derecho (estilo referencia): ocupa altura completa del card,
+   fondo sólido, separa visualmente imagen (izq) + texto (der). */
 .contexto-card__body {
   position: absolute;
-  left: 26px;
-  right: 26px;
-  bottom: 26px;
-  max-width: 520px;
-  padding: 22px 26px 24px;
-  background: #0c0a08;                    /* 100% opaco — sin transparencia ni blur */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-left: 2px solid var(--accent);
-  border-radius: 3px;
-  box-shadow: 0 12px 48px -12px rgba(0, 0, 0, 0.9);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 36%;
+  min-width: 280px;
+  max-width: 420px;
+  padding: 48px 36px;
+  background: #3a332d;              /* gris cálido sólido (más claro que el frame) */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: -10px 0 32px -12px rgba(0, 0, 0, 0.55);
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateX(24px);
   transition: opacity 0.5s ease 0.15s,
               transform 0.6s cubic-bezier(.22, .61, .36, 1) 0.15s;
   pointer-events: none;
@@ -485,43 +489,45 @@ body {
 
 .contexto-card:first-child .contexto-card__body {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 .contexto-grid:hover        .contexto-card .contexto-card__body,
 .contexto-grid:focus-within .contexto-card .contexto-card__body {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateX(24px);
 }
 .contexto-grid:hover        .contexto-card:hover .contexto-card__body,
 .contexto-grid:focus-within .contexto-card:focus .contexto-card__body {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 .contexto-card__num {
   font-family: var(--font-sans);
   font-size: 12px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 12px;
-  font-weight: 600;
+  margin-bottom: 14px;
+  font-weight: 700;
 }
 
 .contexto-card__heading {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 36px;
   font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 14px;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  margin-bottom: 22px;
   color: #fff;
+  text-transform: uppercase;
 }
 
 .contexto-card__texto {
-  font-size: 16.5px;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.97);
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 /* ── Label vertical que aparece cuando la card está recogida ── */
@@ -1158,10 +1164,10 @@ body {
   /* Resultado */
   .resultado-box__h3 { font-size: 22px; }
 
-  /* Contexto sección — compensar margen negativo */
+  /* Contexto sección en móvil: sin margen negativo (rompía el centrado) */
   .contexto-seccion {
-    margin-left:  calc(-1 * var(--pad-h));
-    margin-right: calc(-1 * var(--pad-h));
+    margin-left:  0;
+    margin-right: 0;
     padding: 48px var(--pad-h) 44px;
   }
 
@@ -1294,16 +1300,30 @@ body {
   .contexto-grid:hover        .contexto-card:hover,
   .contexto-grid:focus-within .contexto-card:focus  { height: 380px; }
 
+  /* Móvil: el panel va abajo ocupando todo el ancho (no lateral) */
   .contexto-card__body {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    min-width: 0;
     max-width: none;
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    padding: 16px 18px 18px;
+    padding: 18px 20px 20px;
+    box-shadow: 0 -8px 24px -8px rgba(0, 0, 0, 0.5);
+    transform: translateY(16px);   /* slide vertical en móvil */
+    justify-content: flex-start;
   }
 
-  .contexto-card__heading { font-size: 19px; }
-  .contexto-card__texto   { font-size: 13.5px; line-height: 1.6; }
+  .contexto-card:first-child .contexto-card__body            { transform: translateY(0); }
+  .contexto-grid:hover        .contexto-card .contexto-card__body,
+  .contexto-grid:focus-within .contexto-card .contexto-card__body { transform: translateY(16px); }
+  .contexto-grid:hover        .contexto-card:hover .contexto-card__body,
+  .contexto-grid:focus-within .contexto-card:focus .contexto-card__body { transform: translateY(0); }
+
+  .contexto-card__num     { font-size: 10px; margin-bottom: 6px; letter-spacing: 0.2em; }
+  .contexto-card__heading { font-size: 20px; margin-bottom: 8px; }
+  .contexto-card__texto   { font-size: 13.5px; line-height: 1.55; }
 
   /* En móvil: tag horizontal (no rotado) porque las strips son anchas y bajas */
   .contexto-card__tag {
