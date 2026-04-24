@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caso pedagógico GPF · El guardaparque que llegó tarde</title>
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/caso.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════
+       HERO — imagen de portada full-width
+       Imagen: caso_data.js → imagenes.hero
+  ══════════════════════════════════════════════════════════ -->
+  <header class="hero">
+    <img class="hero__img" id="hero-img" src="" alt="Imagen de portada">
+    <div class="hero__overlay" aria-hidden="true"></div>
+    <div class="hero__caption">
+      <p class="hero__kicker" id="hero-kicker"></p>
+      <h1 class="hero__titulo"  id="hero-titulo"></h1>
+      <p class="hero__sub"      id="hero-sub"></p>
+    </div>
+    <span class="hero__placeholder-label">imagen 1 · portada</span>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════
+       CONTENIDO PRINCIPAL
+  ══════════════════════════════════════════════════════════ -->
+  <main>
+
+    <div class="caso-wrap caso-wrap--first">
+
+      <!-- Kicker y ficha de metadatos -->
+      <p class="kicker">
+        <span id="kicker-modulo"></span>
+        <span class="kicker__sep">·</span>
+        <span class="kicker__codigo" id="kicker-codigo"></span>
+      </p>
+
+      <div class="ficha" id="ficha" role="list" aria-label="Datos del caso"></div>
+
+      <!-- Lead con dropcap -->
+      <p class="caso-lead">
+        <span class="dropcap" id="dropcap" aria-hidden="true"></span>
+        <span id="lead-resto"></span>
+      </p>
+
+    </div><!-- /caso-wrap -->
+
+    <!-- ════════════════════════════════════════════════════
+         01 · APERTURA — CONTEXTO
+         Fondo: caso_data.js → imagenes.contextoBg
+         Cards: imagenes.territorio / .cierre / .actores
+    ════════════════════════════════════════════════════ -->
+    <section class="contexto-seccion" aria-labelledby="contexto-titulo">
+      <img
+        class="contexto-seccion__bg"
+        id="contexto-bg-img"
+        src="imagenes/placeholder_2.svg"
+        alt=""
+        aria-hidden="true"
+      >
+      <div class="contexto-seccion__overlay" aria-hidden="true"></div>
+      <div class="contexto-seccion__inner">
+        <div class="sec-head">
+          <div class="sec-etapa">
+            <span class="sec-etapa__nombre">01 · Apertura</span>
+            <span class="sec-etapa__linea" aria-hidden="true"></span>
+            <span class="sec-etapa__label">Contexto</span>
+          </div>
+          <h2 class="sec-h2" id="contexto-titulo"></h2>
+          <p class="sec-sub"  id="contexto-sub"></p>
+        </div>
+        <div class="contexto-grid" id="contexto-grid" role="list"></div>
+      </div>
+      <span class="contexto-seccion__placeholder-label" aria-hidden="true">imagen 2 · fondo contexto</span>
+    </section>
+
+    <div class="caso-wrap caso-wrap--main">
+
+      <!-- ════════════════════════════════════════════════════
+           01 · APERTURA — SITUACIÓN
+      ════════════════════════════════════════════════════ -->
+      <section aria-labelledby="situacion-titulo">
+        <div class="sec-head">
+          <div class="sec-etapa">
+            <span class="sec-etapa__nombre">01 · Apertura</span>
+            <span class="sec-etapa__linea" aria-hidden="true"></span>
+            <span class="sec-etapa__label">La situación</span>
+          </div>
+          <h2 class="sec-h2" id="situacion-titulo"></h2>
+          <p class="sec-sub"  id="situacion-sub"></p>
+        </div>
+
+        <div class="alerta-bar" role="alert">
+          <span class="alerta-bar__icono" aria-hidden="true">⏱</span>
+          <span id="alerta-txt"></span>
+        </div>
+
+        <div class="hechos" id="hechos" role="list"></div>
+      </section>
+
+      <!-- CTA — botón "Desarrollar el caso" -->
+      <div class="cta-box" id="cta-box">
+        <p class="cta-box__pre">Tienes el contexto y la situación</p>
+        <p class="cta-box__frase">¿Cómo abordarías este caso si estuvieras en el lugar de Carlos?</p>
+        <button class="btn-cta" onclick="abrirDesarrollo()">Desarrollar el caso →</button>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════
+           02 · DESARROLLO
+      ════════════════════════════════════════════════════ -->
+      <section id="seccion-desarrollo" class="hidden" style="scroll-margin-top:40px" aria-labelledby="desarrollo-titulo">
+
+        <div class="sec-head fade-in">
+          <div class="sec-etapa">
+            <span class="sec-etapa__nombre">02 · Desarrollo</span>
+            <span class="sec-etapa__linea" aria-hidden="true"></span>
+            <span class="sec-etapa__label">Tu decisión</span>
+          </div>
+          <h2 class="sec-h2" id="desarrollo-titulo"></h2>
+          <p class="sec-sub"  id="desarrollo-sub"></p>
+        </div>
+
+        <div class="decision-card fade-in">
+          <p class="decision-card__pre">Decisión crítica</p>
+          <h3 class="decision-card__pregunta" id="decision-pregunta"></h3>
+          <p class="decision-card__ctx"       id="decision-ctx"></p>
+        </div>
+
+        <!-- Botones de opción (generados por caso_ui.js) -->
+        <div class="opciones-grid" id="opciones-grid" role="group" aria-label="Opciones de decisión"></div>
+
+        <!-- Área de feedback (generada por caso_ui.js) -->
+        <div id="area-feedback"></div>
+
+      </section>
+
+      <!-- ════════════════════════════════════════════════════
+           03 · EVALUACIÓN LEGAL
+      ════════════════════════════════════════════════════ -->
+      <section id="seccion-evaluacion" class="hidden" style="scroll-margin-top:40px" aria-labelledby="eval-titulo">
+
+        <div class="sec-head fade-in">
+          <div class="sec-etapa">
+            <span class="sec-etapa__nombre">03 · Cierre</span>
+            <span class="sec-etapa__linea" aria-hidden="true"></span>
+            <span class="sec-etapa__label">Evaluación legal</span>
+          </div>
+          <h2 class="sec-h2" id="eval-titulo"></h2>
+          <p class="sec-sub"  id="eval-sub"></p>
+        </div>
+
+        <!-- Marco normativo (generado por caso_ui.js) -->
+        <div class="marco-box fade-in" id="marco-normativo" role="list"></div>
+
+        <!-- Preguntas (generadas por caso_ui.js) -->
+        <div id="preguntas-container"></div>
+
+        <!-- Resultado final (populado por caso_ui.js) -->
+        <div id="resultado-final" class="hidden">
+          <div class="resultado-box fade-in">
+            <p  class="resultado-box__pre">Resultado</p>
+            <h3 class="resultado-box__h3"  id="resultado-h3"></h3>
+            <p  class="resultado-box__desc" id="resultado-desc"></p>
+            <button class="btn-reiniciar" onclick="location.reload()">Reiniciar caso ↻</button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Pie -->
+      <footer class="pie hidden" id="pie-caso">
+        Fin del caso ·
+        <span id="pie-codigo"></span> ·
+        <span id="pie-modulo"></span>
+      </footer>
+
+    </div><!-- /caso-wrap -->
+
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SCRIPTS
+       Orden obligatorio: datos → UI
+  ══════════════════════════════════════════════════════════ -->
+  <script src="js/caso_data.js"></script>
+  <script src="js/caso_ui.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="480" viewBox="0 0 800 480">
+  <rect width="800" height="480" fill="#e8e3d8"/>
+  <rect x="0" y="0" width="800" height="3" fill="#c23b22"/>
+  <line x1="0" y1="240" x2="800" y2="240" stroke="#c8c0b0" stroke-width="1" stroke-dasharray="8,8"/>
+  <line x1="400" y1="0" x2="400" y2="480" stroke="#c8c0b0" stroke-width="1" stroke-dasharray="8,8"/>
+  <rect x="340" y="195" width="120" height="90" rx="4" fill="none" stroke="#b0a898" stroke-width="2"/>
+  <circle cx="370" cy="222" r="10" fill="none" stroke="#b0a898" stroke-width="2"/>
+  <polygon points="340,285 400,225 460,285" fill="#b0a898" opacity="0.5"/>
+  <rect x="200" y="305" width="400" height="54" rx="3" fill="rgba(194,59,34,0.08)"/>
+  <text x="400" y="329" font-family="Georgia,serif" font-size="10" fill="#c23b22" text-anchor="middle" letter-spacing="2">PLACEHOLDER 3</text>
+  <text x="400" y="349" font-family="Georgia,serif" font-size="15" fill="#5a5956" text-anchor="middle">El territorio</text>
+  <text x="12" y="24" font-family="monospace" font-size="10" fill="#b0a898">placeholder_3.svg — 800×480px</text>
+</svg>
