@@ -107,28 +107,87 @@
     txt('contexto-titulo', D.contexto.titulo);
     txt('contexto-sub',    D.contexto.subtitulo);
 
-    /* ── CONTEXTO — cards ── */
+    /* ── CONTEXTO — tabs + stage (click-based) ── */
     var grid = $('contexto-grid');
     if (grid) {
-      D.contexto.bloques.forEach(function (b) {
-        var card = el('div', 'contexto-card');
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('role', 'listitem');
-        card.setAttribute('aria-label', b.heading);
-        card.innerHTML =
-          '<img class="contexto-card__img" src="' + b.imagen + '" alt="' + b.imgAlt + '" ' +
+      // Limpiar contenido y quitar role="list" (pasa a ser un wrapper)
+      grid.innerHTML = '';
+      grid.removeAttribute('role');
+
+      var tabs  = el('div', 'contexto-tabs');
+      tabs.setAttribute('role', 'tablist');
+
+      var stage = el('div', 'contexto-stage');
+
+      var tabEls   = [];
+      var slideEls = [];
+
+      D.contexto.bloques.forEach(function (b, i) {
+        var isActive = i === 0;
+        var tabId    = 'contexto-tab-'   + i;
+        var panelId  = 'contexto-panel-' + i;
+
+        /* Tab button */
+        var tab = el('button', 'contexto-tab' + (isActive ? ' is-active' : ''));
+        tab.id   = tabId;
+        tab.type = 'button';
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        tab.setAttribute('aria-controls', panelId);
+        tab.setAttribute('data-idx', i);
+        tab.textContent = b.heading;
+        tabs.appendChild(tab);
+        tabEls.push(tab);
+
+        /* Slide panel */
+        var slide = el('div', 'contexto-slide' + (isActive ? ' is-active' : ''));
+        slide.id = panelId;
+        slide.setAttribute('role', 'tabpanel');
+        slide.setAttribute('aria-labelledby', tabId);
+        slide.setAttribute('data-idx', i);
+        slide.innerHTML =
+          '<img class="contexto-slide__img" src="' + b.imagen + '" alt="' + b.imgAlt + '" ' +
             'onerror="this.style.background=\'#2a2520\';this.removeAttribute(\'src\')">' +
-          '<div class="contexto-card__tag" aria-hidden="true">' +
-            '<span class="contexto-card__tag-num">' + b.num + '</span>' +
-            '<span class="contexto-card__tag-heading">' + b.heading + '</span>' +
-          '</div>' +
-          '<div class="contexto-card__body">' +
-            '<div class="contexto-card__num">' + b.num + '</div>' +
-            '<h4 class="contexto-card__heading">' + b.heading + '</h4>' +
-            '<p class="contexto-card__texto">' + b.texto + '</p>' +
+          '<div class="contexto-slide__body">' +
+            '<div class="contexto-slide__num">' + b.num + '</div>' +
+            '<h4 class="contexto-slide__heading">' + b.heading + '</h4>' +
+            '<p class="contexto-slide__texto">' + b.texto + '</p>' +
           '</div>';
-        grid.appendChild(card);
+        stage.appendChild(slide);
+        slideEls.push(slide);
       });
+
+      /* Activar una pestaña por índice */
+      function activar(idx) {
+        tabEls.forEach(function (t, k) {
+          var on = (k === idx);
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        slideEls.forEach(function (s, k) {
+          s.classList.toggle('is-active', k === idx);
+        });
+      }
+
+      /* Click + navegación con flechas del teclado */
+      tabEls.forEach(function (tab, idx) {
+        tab.addEventListener('click', function () { activar(idx); });
+        tab.addEventListener('keydown', function (ev) {
+          var n = tabEls.length;
+          if (ev.key === 'ArrowRight') {
+            ev.preventDefault();
+            var next = (idx + 1) % n;
+            activar(next); tabEls[next].focus();
+          } else if (ev.key === 'ArrowLeft') {
+            ev.preventDefault();
+            var prev = (idx - 1 + n) % n;
+            activar(prev); tabEls[prev].focus();
+          }
+        });
+      });
+
+      grid.appendChild(tabs);
+      grid.appendChild(stage);
     }
 
     /* ── SITUACIÓN ── */

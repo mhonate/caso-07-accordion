@@ -378,20 +378,18 @@ body {
 }
 
 
-/* ── 10. CARDS DE CONTEXTO ────────────────────────────────── */
-/* ── ACCORDION SLIDER (flexbox + transitions) ─────────────── */
+/* ── 10. CONTEXTO — TABS + STAGE (click-based) ─────────────── */
+
+/* Wrapper que contiene la barra de tabs + el stage de imagen */
 .contexto-grid {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 10px;
-  height: 680px;
-  width: 100%;          /* base: ancho completo del contenedor (mobile-first safe) */
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
   position: relative;
-  overflow: hidden;
-  border-radius: 4px;
 }
 
-/* Breakout horizontal solo en desktop/tablet grande: rompe el max-width del contenedor */
+/* Breakout horizontal solo en desktop — rompe el max-width del contenedor padre */
 @media (min-width: 1025px) {
   .contexto-grid {
     width: min(1600px, 95vw);
@@ -400,37 +398,73 @@ body {
   }
 }
 
-.contexto-card {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 60px;
+/* Barra de tabs superior */
+.contexto-tabs {
+  display: flex;
+  background: #3a332d;
+  border-radius: 4px 4px 0 0;
   overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.contexto-tab {
+  flex: 1;
+  padding: 20px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.58);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 2px solid var(--accent);
-  background: #2a2520;        /* gris oscuro cálido cuando está recogida */
+  text-align: center;
+  text-transform: lowercase;
   outline: none;
-  transition: flex-grow 0.75s cubic-bezier(.22, .61, .36, 1),
-              box-shadow 0.5s ease;
-  will-change: flex-grow;
+  transition: background 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
 }
 
-/* Primera card abierta por defecto */
-.contexto-card:first-child { flex-grow: 5; }
-
-/* Al hacer hover/focus sobre el grid, todas colapsan salvo la activa */
-.contexto-grid:hover        .contexto-card,
-.contexto-grid:focus-within .contexto-card        { flex-grow: 1; }
-.contexto-grid:hover        .contexto-card:hover,
-.contexto-grid:focus-within .contexto-card:focus  { flex-grow: 5; }
-
-.contexto-card:hover,
-.contexto-card:focus {
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6);
+.contexto-tab:hover,
+.contexto-tab:focus-visible {
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
 }
 
-.contexto-card__img {
+.contexto-tab.is-active {
+  color: #fff;
+  background: rgba(194, 59, 34, 0.12);
+  border-bottom-color: var(--accent);
+}
+
+/* Stage: contenedor de la imagen activa y el panel de texto */
+.contexto-stage {
+  position: relative;
+  height: 560px;
+  width: 100%;
+  overflow: hidden;
+  background: #2a2520;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Cada slide ocupa todo el stage, se superponen y solo la activa tiene opacity 1 */
+.contexto-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+}
+
+.contexto-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease, visibility 0s linear 0s;
+}
+
+.contexto-slide__img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -438,140 +472,75 @@ body {
   object-fit: cover;
   object-position: center;
   display: block;
-  border: none;
   background: #2a2520;
-  opacity: 0;                 /* oculta por defecto → se ve el fondo gris de la card */
+  filter: grayscale(0.55) brightness(0.92);
   transform: scale(1.02);
-  transition: opacity 0.55s ease,
-              transform 0.9s cubic-bezier(.22, .61, .36, 1);
+  transition: transform 0.8s cubic-bezier(.22, .61, .36, 1),
+              filter 0.8s ease;
 }
 
-/* Default: la primera card sale con imagen visible */
-.contexto-card:first-child .contexto-card__img {
-  opacity: 1;
+.contexto-slide.is-active .contexto-slide__img {
   transform: scale(1);
+  filter: grayscale(0.3) brightness(1);
 }
 
-/* Al interactuar: imagen solo en la card activa */
-.contexto-grid:hover        .contexto-card .contexto-card__img,
-.contexto-grid:focus-within .contexto-card .contexto-card__img {
-  opacity: 0;
-  transform: scale(1.02);
-}
-.contexto-grid:hover        .contexto-card:hover .contexto-card__img,
-.contexto-grid:focus-within .contexto-card:focus .contexto-card__img {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Panel lateral derecho (estilo referencia): ocupa altura completa del card,
-   fondo sólido, separa visualmente imagen (izq) + texto (der). */
-.contexto-card__body {
+/* Panel lateral derecho TRANSLÚCIDO (estilo referencia) */
+.contexto-slide__body {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 36%;
-  min-width: 280px;
-  max-width: 420px;
-  padding: 48px 36px;
-  background: #3a332d;              /* gris cálido sólido (más claro que el frame) */
+  width: 38%;
+  min-width: 300px;
+  max-width: 460px;
+  padding: 56px 40px;
+  background: rgba(194, 59, 34, 0.58);      /* --accent translúcido */
+  -webkit-backdrop-filter: blur(4px) saturate(1.05);
+  backdrop-filter: blur(4px) saturate(1.05);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  box-shadow: -10px 0 32px -12px rgba(0, 0, 0, 0.55);
-  opacity: 0;
+  color: #fff;
   transform: translateX(24px);
+  opacity: 0;
   transition: opacity 0.5s ease 0.15s,
               transform 0.6s cubic-bezier(.22, .61, .36, 1) 0.15s;
-  pointer-events: none;
 }
 
-.contexto-card:first-child .contexto-card__body {
+.contexto-slide.is-active .contexto-slide__body {
   opacity: 1;
   transform: translateX(0);
 }
 
-.contexto-grid:hover        .contexto-card .contexto-card__body,
-.contexto-grid:focus-within .contexto-card .contexto-card__body {
-  opacity: 0;
-  transform: translateX(24px);
-}
-.contexto-grid:hover        .contexto-card:hover .contexto-card__body,
-.contexto-grid:focus-within .contexto-card:focus .contexto-card__body {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.contexto-card__num {
+.contexto-slide__num {
   font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 16px;
   font-weight: 700;
 }
 
-.contexto-card__heading {
+.contexto-slide__heading {
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: 44px;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: 0.01em;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
   color: #fff;
   text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
-.contexto-card__texto {
+.contexto-slide__texto {
   font-size: 15.5px;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.95);
 }
 
-/* ── Label vertical que aparece cuando la card está recogida ── */
-.contexto-card__tag {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 26px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.45s ease;
-}
-
-.contexto-card__tag-num {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  color: var(--accent);
-}
-
-.contexto-card__tag-heading {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: #fff;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  white-space: nowrap;
-}
-
-/* Por defecto: oculto en la primera (que está expandida) */
-.contexto-card:first-child .contexto-card__tag { opacity: 0; }
-
-/* Al hacer hover/focus sobre el grid: reaparece en todas, oculta en la activa */
-.contexto-grid:hover        .contexto-card .contexto-card__tag,
-.contexto-grid:focus-within .contexto-card .contexto-card__tag { opacity: 1; }
-.contexto-grid:hover        .contexto-card:hover .contexto-card__tag,
-.contexto-grid:focus-within .contexto-card:focus .contexto-card__tag { opacity: 0; }
 
 
 /* ── 11. SECCIÓN SITUACIÓN ────────────────────────────────── */
@@ -1112,9 +1081,9 @@ body {
   /* Hero un poco más bajo */
   .hero { height: 460px; }
 
-  /* Accordion más bajo en tablet */
-  .contexto-grid {
-    height: 580px;
+  /* Stage más bajo en tablet */
+  .contexto-stage {
+    height: 460px;
   }
 
   /* Opciones: 2 columnas */
@@ -1274,34 +1243,18 @@ body {
   /* Imagen de feedback menos alta en mobile */
   .feedback-img-wrap__img { max-height: 220px; }
 
-  /* Accordion vertical en móvil: apiladas, expansión en altura */
-  .contexto-grid {
-    flex-direction: column;
-    height: auto;
-    gap: 10px;
-    /* Reset del breakout horizontal, se adapta al contenedor normal */
-    width: 100%;
-    left: auto;
-    transform: none;
+  /* Contexto tabs + stage en móvil */
+  .contexto-tabs { flex-wrap: wrap; }
+  .contexto-tab  {
+    flex: 1 1 33%;
+    font-size: 14px;
+    padding: 14px 8px;
   }
 
-  .contexto-card {
-    flex: 1 1 auto;
-    height: 90px;
-    min-width: 0;
-    transition: height 0.7s cubic-bezier(.22, .61, .36, 1),
-                box-shadow 0.5s ease;
-  }
+  .contexto-stage { height: 460px; }
 
-  .contexto-card:first-child { height: 380px; flex-grow: 0; }
-
-  .contexto-grid:hover        .contexto-card,
-  .contexto-grid:focus-within .contexto-card        { flex-grow: 0; height: 90px; }
-  .contexto-grid:hover        .contexto-card:hover,
-  .contexto-grid:focus-within .contexto-card:focus  { height: 380px; }
-
-  /* Móvil: el panel va abajo ocupando todo el ancho (no lateral) */
-  .contexto-card__body {
+  /* Panel del texto: abajo, full-width (en lugar de lateral derecho) */
+  .contexto-slide__body {
     top: auto;
     left: 0;
     right: 0;
@@ -1309,38 +1262,20 @@ body {
     width: 100%;
     min-width: 0;
     max-width: none;
-    padding: 18px 20px 20px;
-    box-shadow: 0 -8px 24px -8px rgba(0, 0, 0, 0.5);
-    transform: translateY(16px);   /* slide vertical en móvil */
-    justify-content: flex-start;
+    padding: 22px 22px 24px;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    transform: translateY(20px);
+    transition: opacity 0.5s ease 0.15s,
+                transform 0.6s cubic-bezier(.22, .61, .36, 1) 0.15s;
+  }
+  .contexto-slide.is-active .contexto-slide__body {
+    transform: translateY(0);
   }
 
-  .contexto-card:first-child .contexto-card__body            { transform: translateY(0); }
-  .contexto-grid:hover        .contexto-card .contexto-card__body,
-  .contexto-grid:focus-within .contexto-card .contexto-card__body { transform: translateY(16px); }
-  .contexto-grid:hover        .contexto-card:hover .contexto-card__body,
-  .contexto-grid:focus-within .contexto-card:focus .contexto-card__body { transform: translateY(0); }
-
-  .contexto-card__num     { font-size: 10px; margin-bottom: 6px; letter-spacing: 0.2em; }
-  .contexto-card__heading { font-size: 20px; margin-bottom: 8px; }
-  .contexto-card__texto   { font-size: 13.5px; line-height: 1.55; }
-
-  /* En móvil: tag horizontal (no rotado) porque las strips son anchas y bajas */
-  .contexto-card__tag {
-    flex-direction: row;
-    gap: 12px;
-    left: 18px;
-    right: 18px;
-    bottom: 50%;
-    transform: translateY(50%);
-    justify-content: flex-start;
-    align-items: center;
-  }
-  .contexto-card__tag-heading {
-    writing-mode: horizontal-tb;
-    transform: none;
-    font-size: 17px;
-  }
+  .contexto-slide__num     { font-size: 10px; margin-bottom: 8px; letter-spacing: 0.22em; }
+  .contexto-slide__heading { font-size: 26px; margin-bottom: 12px; }
+  .contexto-slide__texto   { font-size: 13.5px; line-height: 1.55; }
 
   /* Marco normativo: todo en stack vertical */
   .norma-row {
@@ -1414,14 +1349,10 @@ body {
   /* Resultado */
   .resultado-box__h3 { font-size: 18px; }
 
-  /* Accordion compacto en móvil pequeño */
-  .contexto-card                  { height: 78px; }
-  .contexto-card:first-child      { height: 320px; }
-  .contexto-grid:hover        .contexto-card        { height: 78px; }
-  .contexto-grid:hover        .contexto-card:hover  { height: 320px; }
-  .contexto-grid:focus-within .contexto-card        { height: 78px; }
-  .contexto-grid:focus-within .contexto-card:focus  { height: 320px; }
-  .contexto-card__tag-heading { font-size: 15px; }
+  /* Stage compacto en móvil pequeño */
+  .contexto-stage { height: 380px; }
+  .contexto-tab   { font-size: 12px; padding: 12px 6px; }
+  .contexto-slide__heading { font-size: 22px; }
 }
 
 
