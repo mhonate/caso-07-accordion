@@ -118,6 +118,10 @@
         card.innerHTML =
           '<img class="contexto-card__img" src="' + b.imagen + '" alt="' + b.imgAlt + '" ' +
             'onerror="this.style.background=\'#2a2520\';this.removeAttribute(\'src\')">' +
+          '<div class="contexto-card__tag" aria-hidden="true">' +
+            '<span class="contexto-card__tag-num">' + b.num + '</span>' +
+            '<span class="contexto-card__tag-heading">' + b.heading + '</span>' +
+          '</div>' +
           '<div class="contexto-card__body">' +
             '<div class="contexto-card__num">' + b.num + '</div>' +
             '<h4 class="contexto-card__heading">' + b.heading + '</h4>' +
