@@ -146,8 +146,10 @@
         slide.setAttribute('aria-labelledby', tabId);
         slide.setAttribute('data-idx', i);
         slide.innerHTML =
-          '<img class="contexto-slide__img" src="' + b.imagen + '" alt="' + b.imgAlt + '" ' +
-            'onerror="this.style.background=\'#2a2520\';this.removeAttribute(\'src\')">' +
+          '<div class="contexto-slide__img-wrap">' +
+            '<img class="contexto-slide__img" src="' + b.imagen + '" alt="' + b.imgAlt + '" ' +
+              'onerror="this.style.background=\'#2a2520\';this.removeAttribute(\'src\')">' +
+          '</div>' +
           '<div class="contexto-slide__body">' +
             '<div class="contexto-slide__num">' + b.num + '</div>' +
             '<h4 class="contexto-slide__heading">' + b.heading + '</h4>' +

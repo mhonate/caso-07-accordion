@@ -439,22 +439,25 @@ body {
   border-bottom-color: var(--accent);
 }
 
-/* Stage: contenedor de la imagen activa y el panel de texto.
-   aspect-ratio 3/2 para coincidir con las imágenes fuente (1536x1024) → nunca recorta. */
+/* Stage: contiene los slides. En desktop layout horizontal (imagen + panel
+   separados lado a lado); en tablet/móvil se convierte en vertical. */
 .contexto-stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 2;
-  max-height: 760px;
   overflow: hidden;
   background: #2a2520;
   border-radius: 0 0 4px 4px;
+  /* Aspect-ratio 12:5 → con panel 38% deja al área de imagen ~62%:1 height,
+     cuyo ratio interno resulta ≈ 3:2 (match exacto al source 1536x1024). */
+  aspect-ratio: 12 / 5;
+  max-height: 680px;
 }
 
-/* Cada slide ocupa todo el stage, se superponen y solo la activa tiene opacity 1 */
+/* Cada slide ocupa todo el stage, solo la activa se ve (crossfade) */
 .contexto-slide {
   position: absolute;
   inset: 0;
+  display: flex;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.5s ease, visibility 0s linear 0.5s;
@@ -466,15 +469,23 @@ body {
   transition: opacity 0.5s ease, visibility 0s linear 0s;
 }
 
+/* Área de imagen (izquierda) — toma el espacio restante tras el panel */
+.contexto-slide__img-wrap {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  background: #1a1612;
+}
+
 .contexto-slide__img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;           /* muestra la imagen completa sin recorte */
+  object-fit: cover;             /* el ratio del área coincide con el de la imagen */
   object-position: center;
   display: block;
-  background: #2a2520;           /* letterbox color si el ratio del viewport difiere */
+  background: #2a2520;
   transform: scale(1.01);
   transition: transform 0.8s cubic-bezier(.22, .61, .36, 1);
 }
@@ -483,20 +494,13 @@ body {
   transform: scale(1);
 }
 
-/* Panel lateral derecho TRANSLÚCIDO (estilo referencia) */
+/* Panel lateral derecho SÓLIDO (ya no es overlay — la imagen queda libre) */
 .contexto-slide__body {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 38%;
+  flex: 0 0 38%;
   min-width: 300px;
   max-width: 460px;
   padding: 56px 40px;
-  background: rgba(194, 59, 34, 0.58);      /* --accent translúcido */
-  -webkit-backdrop-filter: blur(4px) saturate(1.05);
-  backdrop-filter: blur(4px) saturate(1.05);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(194, 59, 34, 0.92);        /* acento casi sólido */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1080,9 +1084,39 @@ body {
   /* Hero un poco más bajo */
   .hero { height: 460px; }
 
-  /* Stage en tablet: ratio 3/2 se mantiene, solo límite de altura */
+  /* Tablet/móvil: stack vertical — imagen arriba, texto abajo */
   .contexto-stage {
-    max-height: 620px;
+    aspect-ratio: auto;
+    max-height: none;
+    height: auto;
+  }
+
+  .contexto-slide {
+    position: absolute;   /* seguimos con crossfade absoluto */
+    flex-direction: column;
+  }
+
+  /* El slide activo define la altura del stage */
+  .contexto-slide.is-active {
+    position: relative;
+  }
+
+  .contexto-slide__img-wrap {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+  }
+
+  .contexto-slide__body {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding: 28px 28px 32px;
+    transform: translateY(20px);
+  }
+  .contexto-slide.is-active .contexto-slide__body {
+    transform: translateY(0);
   }
 
   /* Opciones: 2 columnas */
@@ -1250,27 +1284,9 @@ body {
     padding: 14px 8px;
   }
 
-  /* En móvil, la imagen puede ocupar menos altura; dejamos que el ratio la defina */
-  .contexto-stage { max-height: none; }
-
-  /* Panel del texto: abajo, full-width (en lugar de lateral derecho) */
+  /* En móvil pequeño: padding del panel más compacto y texto más chico */
   .contexto-slide__body {
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    padding: 22px 22px 24px;
-    border-left: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    transform: translateY(20px);
-    transition: opacity 0.5s ease 0.15s,
-                transform 0.6s cubic-bezier(.22, .61, .36, 1) 0.15s;
-  }
-  .contexto-slide.is-active .contexto-slide__body {
-    transform: translateY(0);
+    padding: 22px 22px 26px;
   }
 
   .contexto-slide__num     { font-size: 10px; margin-bottom: 8px; letter-spacing: 0.22em; }
