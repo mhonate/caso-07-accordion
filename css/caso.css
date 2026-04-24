@@ -378,171 +378,184 @@ body {
 }
 
 
-/* ── 10. CONTEXTO — TABS + STAGE (click-based) ─────────────── */
-
-/* Wrapper que contiene la barra de tabs + el stage de imagen */
+/* ── 10. CARDS DE CONTEXTO — grid de 3 cards individuales ────── */
 .contexto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.contexto-card {
+  background: rgba(250, 247, 242, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-top: 2px solid var(--accent);
+  border-radius: 2px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0;
+}
+
+/* Botón envolviendo la imagen — abre el lightbox al hacer clic */
+.contexto-card__img-btn {
+  display: block;
   width: 100%;
-  position: relative;
-}
-
-/* Breakout horizontal solo en desktop — rompe el max-width del contenedor padre */
-@media (min-width: 1025px) {
-  .contexto-grid {
-    width: min(1600px, 95vw);
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
-/* Barra de tabs superior */
-.contexto-tabs {
-  display: flex;
-  background: #3a332d;
-  border-radius: 4px 4px 0 0;
-  overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.contexto-tab {
-  flex: 1;
-  padding: 20px 18px;
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  color: rgba(255, 255, 255, 0.58);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  text-align: center;
-  text-transform: lowercase;
-  outline: none;
-  transition: background 0.3s ease,
-              color 0.3s ease,
-              border-color 0.3s ease;
-}
-
-.contexto-tab:hover,
-.contexto-tab:focus-visible {
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
-}
-
-.contexto-tab.is-active {
-  color: #fff;
-  background: rgba(194, 59, 34, 0.12);
-  border-bottom-color: var(--accent);
-}
-
-/* Stage: contiene los slides. En desktop layout horizontal (imagen + panel
-   separados lado a lado); en tablet/móvil se convierte en vertical. */
-.contexto-stage {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
+  padding: 0;
+  border: 0;
   background: #2a2520;
-  border-radius: 0 0 4px 4px;
-  /* Aspect-ratio 12:5 → con panel 38% deja al área de imagen ~62%:1 height,
-     cuyo ratio interno resulta ≈ 3:2 (match exacto al source 1536x1024). */
-  aspect-ratio: 12 / 5;
-  max-height: 680px;
-}
-
-/* Cada slide ocupa todo el stage, solo la activa se ve (crossfade) */
-.contexto-slide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
-}
-
-.contexto-slide.is-active {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.5s ease, visibility 0s linear 0s;
-}
-
-/* Área de imagen (izquierda) — toma el espacio restante tras el panel */
-.contexto-slide__img-wrap {
-  flex: 1 1 auto;
+  cursor: zoom-in;
   position: relative;
   overflow: hidden;
-  background: #1a1612;
+  outline: none;
 }
 
-.contexto-slide__img {
+.contexto-card__img-btn::after {
+  /* ícono/lupa sutil en la esquina para indicar que es clickeable */
+  content: "⤢";
   position: absolute;
-  inset: 0;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.contexto-card__img-btn:hover::after,
+.contexto-card__img-btn:focus-visible::after { opacity: 1; transform: translateY(0); }
+
+.contexto-card__img-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.contexto-card__img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;             /* el ratio del área coincide con el de la imagen */
+  height: 200px;
+  object-fit: cover;
   object-position: center;
   display: block;
-  background: #2a2520;
-  transform: scale(1.01);
-  transition: transform 0.8s cubic-bezier(.22, .61, .36, 1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  transition: transform 0.5s cubic-bezier(.22, .61, .36, 1);
 }
 
-.contexto-slide.is-active .contexto-slide__img {
-  transform: scale(1);
+.contexto-card__img-btn:hover .contexto-card__img { transform: scale(1.03); }
+
+.contexto-card__body {
+  padding: 18px 20px 22px;
+  flex: 1;
 }
 
-/* Panel lateral derecho SÓLIDO (ya no es overlay — la imagen queda libre) */
-.contexto-slide__body {
-  flex: 0 0 38%;
-  min-width: 300px;
-  max-width: 460px;
-  padding: 56px 40px;
-  background: rgba(194, 59, 34, 0.92);        /* acento casi sólido */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #fff;
-  transform: translateX(24px);
-  opacity: 0;
-  transition: opacity 0.5s ease 0.15s,
-              transform 0.6s cubic-bezier(.22, .61, .36, 1) 0.15s;
-}
-
-.contexto-slide.is-active .contexto-slide__body {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.contexto-slide__num {
+.contexto-card__num {
   font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.28em;
+  font-size: 10px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 16px;
-  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 600;
 }
 
-.contexto-slide__heading {
+.contexto-card__heading {
   font-family: var(--font-display);
-  font-size: 44px;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
   color: #fff;
-  text-transform: uppercase;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
 }
 
-.contexto-slide__texto {
-  font-size: 15.5px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.95);
+.contexto-card__texto {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.7);
 }
+
+
+/* ── LIGHTBOX (popup de imagen completa al hacer clic) ─────── */
+.contexto-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px 72px;
+  background: rgba(10, 8, 6, 0.94);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.contexto-lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.contexto-lightbox__img {
+  max-width: min(1600px, 100%);
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9);
+  transform: scale(0.96);
+  transition: transform 0.3s cubic-bezier(.22, .61, .36, 1);
+}
+
+.contexto-lightbox.is-open .contexto-lightbox__img { transform: scale(1); }
+
+.contexto-lightbox__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.contexto-lightbox__close:hover,
+.contexto-lightbox__close:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+}
+
+.contexto-lightbox__caption {
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  bottom: 24px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* bloquear scroll del body cuando el lightbox está abierto */
+body.has-lightbox { overflow: hidden; }
 
 
 
@@ -1084,40 +1097,8 @@ body {
   /* Hero un poco más bajo */
   .hero { height: 460px; }
 
-  /* Tablet/móvil: stack vertical — imagen arriba, texto abajo */
-  .contexto-stage {
-    aspect-ratio: auto;
-    max-height: none;
-    height: auto;
-  }
-
-  .contexto-slide {
-    position: absolute;   /* seguimos con crossfade absoluto */
-    flex-direction: column;
-  }
-
-  /* El slide activo define la altura del stage */
-  .contexto-slide.is-active {
-    position: relative;
-  }
-
-  .contexto-slide__img-wrap {
-    flex: none;
-    width: 100%;
-    aspect-ratio: 3 / 2;
-  }
-
-  .contexto-slide__body {
-    flex: none;
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    padding: 28px 28px 32px;
-    transform: translateY(20px);
-  }
-  .contexto-slide.is-active .contexto-slide__body {
-    transform: translateY(0);
-  }
+  /* Contexto cards: imagen más corta en tablet */
+  .contexto-card__img { height: 180px; }
 
   /* Opciones: 2 columnas */
   .opciones-grid {
@@ -1276,22 +1257,18 @@ body {
   /* Imagen de feedback menos alta en mobile */
   .feedback-img-wrap__img { max-height: 220px; }
 
-  /* Contexto tabs + stage en móvil */
-  .contexto-tabs { flex-wrap: wrap; }
-  .contexto-tab  {
-    flex: 1 1 33%;
-    font-size: 14px;
-    padding: 14px 8px;
+  /* Contexto cards en móvil: 1 columna, imagen mediana */
+  .contexto-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
+  .contexto-card__img { height: 200px; }
+  .contexto-card__heading { font-size: 19px; }
 
-  /* En móvil pequeño: padding del panel más compacto y texto más chico */
-  .contexto-slide__body {
-    padding: 22px 22px 26px;
-  }
-
-  .contexto-slide__num     { font-size: 10px; margin-bottom: 8px; letter-spacing: 0.22em; }
-  .contexto-slide__heading { font-size: 26px; margin-bottom: 12px; }
-  .contexto-slide__texto   { font-size: 13.5px; line-height: 1.55; }
+  /* Lightbox en móvil: menos padding para usar más viewport */
+  .contexto-lightbox          { padding: 16px 16px 56px; }
+  .contexto-lightbox__close   { top: 12px; right: 12px; width: 40px; height: 40px; font-size: 22px; }
+  .contexto-lightbox__caption { left: 16px; right: 16px; bottom: 16px; font-size: 12px; }
 
   /* Marco normativo: todo en stack vertical */
   .norma-row {
@@ -1365,9 +1342,9 @@ body {
   /* Resultado */
   .resultado-box__h3 { font-size: 18px; }
 
-  /* Stage compacto en móvil pequeño */
-  .contexto-tab            { font-size: 12px; padding: 12px 6px; }
-  .contexto-slide__heading { font-size: 22px; }
+  /* Contexto cards: imagen algo más chica en móvil pequeño */
+  .contexto-card__img      { height: 170px; }
+  .contexto-card__heading  { font-size: 17px; }
 }
 
 

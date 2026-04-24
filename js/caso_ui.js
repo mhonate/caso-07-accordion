@@ -107,89 +107,78 @@
     txt('contexto-titulo', D.contexto.titulo);
     txt('contexto-sub',    D.contexto.subtitulo);
 
-    /* ── CONTEXTO — tabs + stage (click-based) ── */
+    /* ── CONTEXTO — 3 cards individuales, imagen abre lightbox al clic ── */
     var grid = $('contexto-grid');
     if (grid) {
-      // Limpiar contenido y quitar role="list" (pasa a ser un wrapper)
       grid.innerHTML = '';
-      grid.removeAttribute('role');
+      grid.setAttribute('role', 'list');
 
-      var tabs  = el('div', 'contexto-tabs');
-      tabs.setAttribute('role', 'tablist');
+      /* Crear el lightbox una sola vez (oculto hasta que se active) */
+      var lightbox = document.createElement('div');
+      lightbox.className = 'contexto-lightbox';
+      lightbox.setAttribute('role', 'dialog');
+      lightbox.setAttribute('aria-modal', 'true');
+      lightbox.setAttribute('aria-label', 'Imagen ampliada');
+      lightbox.innerHTML =
+        '<button class="contexto-lightbox__close" type="button" aria-label="Cerrar">&times;</button>' +
+        '<img class="contexto-lightbox__img" src="" alt="">' +
+        '<div class="contexto-lightbox__caption"></div>';
+      document.body.appendChild(lightbox);
 
-      var stage = el('div', 'contexto-stage');
+      var lbImg     = lightbox.querySelector('.contexto-lightbox__img');
+      var lbCaption = lightbox.querySelector('.contexto-lightbox__caption');
+      var lbClose   = lightbox.querySelector('.contexto-lightbox__close');
+      var lastFocus = null;
 
-      var tabEls   = [];
-      var slideEls = [];
-
-      D.contexto.bloques.forEach(function (b, i) {
-        var isActive = i === 0;
-        var tabId    = 'contexto-tab-'   + i;
-        var panelId  = 'contexto-panel-' + i;
-
-        /* Tab button */
-        var tab = el('button', 'contexto-tab' + (isActive ? ' is-active' : ''));
-        tab.id   = tabId;
-        tab.type = 'button';
-        tab.setAttribute('role', 'tab');
-        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-        tab.setAttribute('aria-controls', panelId);
-        tab.setAttribute('data-idx', i);
-        tab.textContent = b.heading;
-        tabs.appendChild(tab);
-        tabEls.push(tab);
-
-        /* Slide panel */
-        var slide = el('div', 'contexto-slide' + (isActive ? ' is-active' : ''));
-        slide.id = panelId;
-        slide.setAttribute('role', 'tabpanel');
-        slide.setAttribute('aria-labelledby', tabId);
-        slide.setAttribute('data-idx', i);
-        slide.innerHTML =
-          '<div class="contexto-slide__img-wrap">' +
-            '<img class="contexto-slide__img" src="' + b.imagen + '" alt="' + b.imgAlt + '" ' +
-              'onerror="this.style.background=\'#2a2520\';this.removeAttribute(\'src\')">' +
-          '</div>' +
-          '<div class="contexto-slide__body">' +
-            '<div class="contexto-slide__num">' + b.num + '</div>' +
-            '<h4 class="contexto-slide__heading">' + b.heading + '</h4>' +
-            '<p class="contexto-slide__texto">' + b.texto + '</p>' +
-          '</div>';
-        stage.appendChild(slide);
-        slideEls.push(slide);
-      });
-
-      /* Activar una pestaña por índice */
-      function activar(idx) {
-        tabEls.forEach(function (t, k) {
-          var on = (k === idx);
-          t.classList.toggle('is-active', on);
-          t.setAttribute('aria-selected', on ? 'true' : 'false');
-        });
-        slideEls.forEach(function (s, k) {
-          s.classList.toggle('is-active', k === idx);
-        });
+      function openLightbox(src, alt, caption, returnEl) {
+        lbImg.src         = src;
+        lbImg.alt         = alt || '';
+        lbCaption.textContent = caption || '';
+        lastFocus = returnEl || null;
+        lightbox.classList.add('is-open');
+        document.body.classList.add('has-lightbox');
+        lbClose.focus();
+      }
+      function closeLightbox() {
+        lightbox.classList.remove('is-open');
+        document.body.classList.remove('has-lightbox');
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
       }
 
-      /* Click + navegación con flechas del teclado */
-      tabEls.forEach(function (tab, idx) {
-        tab.addEventListener('click', function () { activar(idx); });
-        tab.addEventListener('keydown', function (ev) {
-          var n = tabEls.length;
-          if (ev.key === 'ArrowRight') {
-            ev.preventDefault();
-            var next = (idx + 1) % n;
-            activar(next); tabEls[next].focus();
-          } else if (ev.key === 'ArrowLeft') {
-            ev.preventDefault();
-            var prev = (idx - 1 + n) % n;
-            activar(prev); tabEls[prev].focus();
-          }
-        });
+      /* Cerrar: botón, clic fuera de la imagen, tecla ESC */
+      lbClose.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', function (ev) {
+        if (ev.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && lightbox.classList.contains('is-open')) {
+          closeLightbox();
+        }
       });
 
-      grid.appendChild(tabs);
-      grid.appendChild(stage);
+      /* Render de cards */
+      D.contexto.bloques.forEach(function (b) {
+        var card = el('div', 'contexto-card');
+        card.setAttribute('role', 'listitem');
+        card.innerHTML =
+          '<button class="contexto-card__img-btn" type="button" ' +
+            'aria-label="Ver imagen: ' + b.heading + '">' +
+            '<img class="contexto-card__img" src="' + b.imagen + '" alt="' + b.imgAlt + '" ' +
+              'onerror="this.style.background=\'#2a2520\';this.removeAttribute(\'src\')">' +
+          '</button>' +
+          '<div class="contexto-card__body">' +
+            '<div class="contexto-card__num">' + b.num + '</div>' +
+            '<h4 class="contexto-card__heading">' + b.heading + '</h4>' +
+            '<p class="contexto-card__texto">' + b.texto + '</p>' +
+          '</div>';
+        grid.appendChild(card);
+
+        /* Click en la imagen → abre el popup */
+        var btn = card.querySelector('.contexto-card__img-btn');
+        btn.addEventListener('click', function () {
+          openLightbox(b.imagen, b.imgAlt, b.heading, btn);
+        });
+      });
     }
 
     /* ── SITUACIÓN ── */
