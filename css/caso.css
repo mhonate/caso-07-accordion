@@ -439,11 +439,13 @@ body {
   border-bottom-color: var(--accent);
 }
 
-/* Stage: contenedor de la imagen activa y el panel de texto */
+/* Stage: contenedor de la imagen activa y el panel de texto.
+   aspect-ratio 3/2 para coincidir con las imágenes fuente (1536x1024) → nunca recorta. */
 .contexto-stage {
   position: relative;
-  height: 560px;
   width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: 760px;
   overflow: hidden;
   background: #2a2520;
   border-radius: 0 0 4px 4px;
@@ -469,19 +471,16 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;           /* muestra la imagen completa sin recorte */
   object-position: center;
   display: block;
-  background: #2a2520;
-  filter: grayscale(0.55) brightness(0.92);
-  transform: scale(1.02);
-  transition: transform 0.8s cubic-bezier(.22, .61, .36, 1),
-              filter 0.8s ease;
+  background: #2a2520;           /* letterbox color si el ratio del viewport difiere */
+  transform: scale(1.01);
+  transition: transform 0.8s cubic-bezier(.22, .61, .36, 1);
 }
 
 .contexto-slide.is-active .contexto-slide__img {
   transform: scale(1);
-  filter: grayscale(0.3) brightness(1);
 }
 
 /* Panel lateral derecho TRANSLÚCIDO (estilo referencia) */
@@ -1081,9 +1080,9 @@ body {
   /* Hero un poco más bajo */
   .hero { height: 460px; }
 
-  /* Stage más bajo en tablet */
+  /* Stage en tablet: ratio 3/2 se mantiene, solo límite de altura */
   .contexto-stage {
-    height: 460px;
+    max-height: 620px;
   }
 
   /* Opciones: 2 columnas */
@@ -1251,7 +1250,8 @@ body {
     padding: 14px 8px;
   }
 
-  .contexto-stage { height: 460px; }
+  /* En móvil, la imagen puede ocupar menos altura; dejamos que el ratio la defina */
+  .contexto-stage { max-height: none; }
 
   /* Panel del texto: abajo, full-width (en lugar de lateral derecho) */
   .contexto-slide__body {
@@ -1350,8 +1350,7 @@ body {
   .resultado-box__h3 { font-size: 18px; }
 
   /* Stage compacto en móvil pequeño */
-  .contexto-stage { height: 380px; }
-  .contexto-tab   { font-size: 12px; padding: 12px 6px; }
+  .contexto-tab            { font-size: 12px; padding: 12px 6px; }
   .contexto-slide__heading { font-size: 22px; }
 }
 
