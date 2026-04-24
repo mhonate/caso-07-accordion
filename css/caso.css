@@ -385,7 +385,11 @@ body {
   flex-wrap: nowrap;
   gap: 10px;
   height: 680px;
-  width: 100%;
+  /* Romper el max-width (820px) del contenedor padre para ocupar casi todo el viewport */
+  width: min(1600px, 95vw);
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
   overflow: hidden;
   border-radius: 4px;
 }
@@ -397,9 +401,9 @@ body {
   overflow: hidden;
   cursor: pointer;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-top: 2px solid var(--accent);
-  background: #1a1612;
+  background: #000;           /* fondo negro sólido cuando está recogida */
   outline: none;
   transition: flex-grow 0.75s cubic-bezier(.22, .61, .36, 1),
               box-shadow 0.5s ease;
@@ -429,29 +433,29 @@ body {
   object-position: center;
   display: block;
   border: none;
-  background: #2a2520;
+  background: #000;
+  opacity: 0;                 /* oculta por defecto → se ve el fondo negro */
   transform: scale(1.02);
-  filter: brightness(0.72) saturate(0.95);
-  transition: transform 0.9s cubic-bezier(.22, .61, .36, 1),
-              filter 0.6s ease;
+  transition: opacity 0.55s ease,
+              transform 0.9s cubic-bezier(.22, .61, .36, 1);
 }
 
-/* Default: la primera card sale "iluminada" */
+/* Default: la primera card sale con imagen visible */
 .contexto-card:first-child .contexto-card__img {
+  opacity: 1;
   transform: scale(1);
-  filter: brightness(1) saturate(1.05);
 }
 
-/* Al interactuar con otra, esa se ilumina y las demás se atenúan */
+/* Al interactuar: imagen solo en la card activa */
 .contexto-grid:hover        .contexto-card .contexto-card__img,
 .contexto-grid:focus-within .contexto-card .contexto-card__img {
+  opacity: 0;
   transform: scale(1.02);
-  filter: brightness(0.72) saturate(0.95);
 }
 .contexto-grid:hover        .contexto-card:hover .contexto-card__img,
 .contexto-grid:focus-within .contexto-card:focus .contexto-card__img {
+  opacity: 1;
   transform: scale(1);
-  filter: brightness(1) saturate(1.05);
 }
 
 /* Viñeta para legibilidad sobre la imagen */
@@ -513,27 +517,27 @@ body {
 
 .contexto-card__num {
   font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.16em;
+  font-size: 12px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-weight: 600;
 }
 
 .contexto-card__heading {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   color: #fff;
 }
 
 .contexto-card__texto {
-  font-size: 14.5px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.96);
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.97);
 }
 
 /* ── Label vertical que aparece cuando la card está recogida ── */
@@ -553,22 +557,20 @@ body {
 
 .contexto-card__tag-num {
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
   color: var(--accent);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
 .contexto-card__tag-heading {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: #fff;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
   white-space: nowrap;
 }
 
@@ -1287,6 +1289,10 @@ body {
     flex-direction: column;
     height: auto;
     gap: 10px;
+    /* Reset del breakout horizontal, se adapta al contenedor normal */
+    width: 100%;
+    left: auto;
+    transform: none;
   }
 
   .contexto-card {
